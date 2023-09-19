@@ -66,7 +66,7 @@ public class Player
             _vy = 0;
         }
 
-        if (GetDistanceToBall() < BallKickDistance) // ti daleko, ne bej dadja
+        if (GetDistanceToBall() < BallKickDistance) // hit
         {
             Team.SetBallSpeed(
                 MaxKickSpeed * _random.NextDouble(),
@@ -77,10 +77,10 @@ public class Player
         var newX = X + _vx;
         var newY = Y + _vy;
         var newAbsolutePosition = Team.Game.GetPositionForTeam(Team, newX, newY);
-        if (Team.Game.Stadium.IsIn(newAbsolutePosition.Item1, newAbsolutePosition.Item2))
+        if (Team.Game.Stadium.IsIn(newAbsolutePosition.Item1, newAbsolutePosition.Item2)) // ustanivka apozicii
         {
             X = newX;
-            Y = newY;
+            Y = newY; 
         }
         else
         {
