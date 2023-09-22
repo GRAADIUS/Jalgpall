@@ -1,90 +1,101 @@
-﻿using System;
+﻿using System; // Подключение пространства имен System
 
-namespace Football;
-
-public class Player
+namespace Football // Объявление пространства имен Football
 {
-    public string Name { get; } // Just say my name
-    public double X { get; private set; } // hell, where i am
-    public double Y { get; private set; } // again!?
-    private double _vx, _vy; // to this sword vx, vy meters
-    public Team? Team { get; set; } = null; // It's my team, and it's my family
-
-    private const double MaxSpeed = 5; // why I so slow?
-    private const double MaxKickSpeed = 25; // No! My leggs! a haven't leggs!
-    private const double BallKickDistance = 10; // Why balls cann't fly?
-
-    private Random _random = new Random(); // Oh no! RND!
-    // I like lego!
-    public Player(string name) // I now his name, but i dont now his team...
+    public class Player // Объявление класса Player
     {
-        Name = name;
-    }
+        public string Name { get; } // Имя игрока (свойство только для чтения)
 
-    public Player(string name, double x, double y, Team team) // now I know what team he's on
-    {
-        Name = name;
-        X = x;
-        Y = y;
-        Team = team;
-    }
+        public double X { get; private set; } // Положение игрока на стадионе (координата X)
+        public double Y { get; private set; } // Положение игрока на стадионе (координата Y)
+        private double _vx, _vy; // Смещение на координатных осях X и Y
 
-    public void SetPosition(double x, double y) // you need move here
-    {
-        X = x;
-        Y = y;
-    }
+        public Team? Team { get; set; } = null; // Команда, в которой играет игрок (может быть null)
 
-    public (double, double) GetAbsolutePosition() // Hay! what team are you from?! And go on you'r field!
-    {
-        return Team!.Game.GetPositionForTeam(Team, X, Y);
-    }
+        private const double MaxSpeed = 5; // Максимальная скорость игрока
+        private const double MaxKickSpeed = 25; // Максимальная сила удара
+        private const double BallKickDistance = 10; // Дистанция для удара мяча
 
-    public double GetDistanceToBall() // use a brain, and match what distance for the ball
-    {
-        var ballPosition = Team!.GetBallPosition();
-        var dx = ballPosition.Item1 - X;
-        var dy = ballPosition.Item2 - Y;
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
+        private Random _random = new Random(); // Генератор случайных чисел
 
-    public void MoveTowardsBall() // run for ball
-    {
-        var ballPosition = Team!.GetBallPosition();
-        var dx = ballPosition.Item1 - X;
-        var dy = ballPosition.Item2 - Y;
-        var ratio = Math.Sqrt(dx * dx + dy * dy) / MaxSpeed;
-        _vx = dx / ratio;
-        _vy = dy / ratio;
-    }
-
-    public void Move() // you can move?
-    {
-        if (Team.GetClosestPlayerToBall() != this)
+        // Конструктор класса, принимающий имя игрока
+        public Player(string name)
         {
-            _vx = 0;
-            _vy = 0;
+            Name = name;
         }
 
-        if (GetDistanceToBall() < BallKickDistance) // hit
+        // Конструктор класса, принимающий имя игрока, начальные координаты и команду
+        public Player(string name, double x, double y, Team team)
         {
-            Team.SetBallSpeed(
-                MaxKickSpeed * _random.NextDouble(),
-                MaxKickSpeed * (_random.NextDouble() - 0.5)
+            Name = name;
+            X = x;
+            Y = y;
+            Team = team;
+        }
+
+        // Метод для установки позиции игрока
+        public void SetPosition(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        // Метод для получения абсолютной позиции игрока на поле
+        public (double, double) GetAbsolutePosition()
+        {
+            return Team!.Game.GetPositionForTeam(Team, X, Y);
+        }
+
+        // Метод для вычисления расстояния до мяча
+        public double GetDistanceToBall()
+        {
+            var ballPosition = Team!.GetBallPosition();
+            var dx = ballPosition.Item1 - X;
+            var dy = ballPosition.Item2 - Y;
+            return Math.Sqrt(dx * dx + dy * dy); // Расстояние до мяча по теореме Пифагора
+        }
+
+        // Метод для перемещения игрока в направлении мяча
+        public void MoveTowardsBall()
+        {
+            var ballPosition = Team!.GetBallPosition();
+            var dx = ballPosition.Item1 - X;
+            var dy = ballPosition.Item2 - Y;
+            var ratio = Math.Sqrt(dx * dx + dy * dy) / MaxSpeed; // Отношение расстояния до мяча к максимальной скорости
+            _vx = dx / ratio;
+            _vy = dy / ratio;
+        }
+
+        // Метод для перемещения игрока
+        public void Move()
+        {
+            if (Team.GetClosestPlayerToBall() != this)
+            {
+                _vx = 0;
+                _vy = 0;
+            }
+
+            if (GetDistanceToBall() < BallKickDistance) // Если игрок находится достаточно близко к мячу, он ударяет
+            {
+                Team.SetBallSpeed(
+                    MaxKickSpeed * _random.NextDouble(), // Генерируется случайная сила удара
+                    MaxKickSpeed * (_random.NextDouble() - 0.5) // Генерируется случайное направление удара
                 );
-        }
+            }
 
-        var newX = X + _vx;
-        var newY = Y + _vy;
-        var newAbsolutePosition = Team.Game.GetPositionForTeam(Team, newX, newY);
-        if (Team.Game.Stadium.IsIn(newAbsolutePosition.Item1, newAbsolutePosition.Item2)) // ustanivka apozicii
-        {
-            X = newX;
-            Y = newY; 
-        }
-        else
-        {
-            _vx = _vy = 0;
+            var newX = X + _vx;
+            var newY = Y + _vy;
+            var newAbsolutePosition = Team.Game.GetPositionForTeam(Team, newX, newY);
+
+            if (Team.Game.Stadium.IsIn(newAbsolutePosition.Item1, newAbsolutePosition.Item2))
+            {
+                X = newX;
+                Y = newY;
+            }
+            else
+            {
+                _vx = _vy = 0; // Если игрок выходит за границы стадиона, его скорость обнуляется
+            }
         }
     }
 }

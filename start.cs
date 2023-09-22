@@ -11,38 +11,34 @@ namespace Jalgpall
     {
         public static void Main()
         {
-            Team t1 = new Team("Uno");
-            Player p1_1 = new Player("Bruno", 2, 23, t1);
-            Player p2_1 = new Player("Bruno", 2, 23, t1);
-            Player p3_1 = new Player("Bruno", 2, 23, t1);
-            Player p4_1 = new Player("Bruno", 2, 23, t1);
-            Player p5_1 = new Player("Bruno", 2, 23, t1);
-            Player p6_1 = new Player("Bruno", 2, 23, t1);
-            Player p7_1 = new Player("Bruno", 2, 23, t1);
-            t1.AddPlayer(p1_2);
-            t1.AddPlayer(p2_2);
-            t1.AddPlayer(p3_2);
-            t1.AddPlayer(p4_2);
-            t1.AddPlayer(p5_2);
-            t1.AddPlayer(p6_2);
-            t1.AddPlayer(p7_2);
+            Random rndX = new Random();
+            Random rndY = new Random();
+            Console.WriteLine("enter the name of the first team:");
+            string name_T1 = Console.ReadLine();
+            Team t1 = new Team(name_T1);
+            for (int i = 0; i < 7; i++)
+            {
+                int Xcord = rndX.Next(1, 13);
+                int Ycord = rndY.Next(1, 13);
+                Console.WriteLine("enter the name of the player in the first team:");
+                string player_name_t1 = Console.ReadLine();
+                Player p = new Player(player_name_t1, Xcord, Ycord, t1);
+                t1.AddPlayer(p);
+            }
 
 
-            Team t2 = new Team("Dos");
-            Player p1_2 = new Player("Barri", 2, 23, t2);
-            Player p2_2 = new Player("Barri");
-            Player p3_2 = new Player("Barri");
-            Player p4_2 = new Player("Barri");
-            Player p5_2 = new Player("Barri");
-            Player p6_2 = new Player("Barri");
-            Player p7_2 = new Player("Barri");
-            t2.AddPlayer(p1_2);
-            t2.AddPlayer(p2_2);
-            t2.AddPlayer(p3_2);               
-            t2.AddPlayer(p4_2);
-            t2.AddPlayer(p5_2);
-            t2.AddPlayer(p6_2);
-            t2.AddPlayer(p7_2);
+            Console.WriteLine("enter the name of the second team:");
+            string name_T2 = Console.ReadLine();
+            Team t2 = new Team(name_T2);
+            for (int i = 0; i < 7; i++)
+            {
+                int Xcord = rndX.Next(1, 13);
+                int Ycord = rndY.Next(1, 13);
+                Console.WriteLine("enter the name of the player in the second team:");
+                string player_name_t2 = Console.ReadLine();
+                Player p = new Player(player_name_t2, Xcord, Ycord, t2);
+                t2.AddPlayer(p);
+            }
 
             Stadium s = new Stadium(400, 300);
 

@@ -1,58 +1,67 @@
-﻿namespace Football;
-
-public class Game
+﻿namespace Football
 {
-    public Team HomeTeam { get; }
-    public Team AwayTeam { get; }
-    public Stadium Stadium { get; }
-    public Ball Ball { get; private set; }
+    public class Game
+    {
+        public Team HomeTeam { get; } // Свойство для доступа к домашней команде.
+        public Team AwayTeam { get; } // Свойство для доступа к гостевой команде.
+        public Stadium Stadium { get; } // Свойство для доступа к стадиону.
+        public Ball Ball { get; private set; } // Свойство для доступа к мячу с приватным сеттером.
 
-    public Game(Team homeTeam, Team awayTeam, Stadium stadium)
-    {
-        HomeTeam = homeTeam;
-        homeTeam.Game = this;
-        AwayTeam = awayTeam;
-        awayTeam.Game = this;
-        Stadium = stadium;
-    }
-
-    public void Start()
-    {
-        Ball = new Ball(Stadium.Width / 2, Stadium.Height / 2, this);
-        HomeTeam.StartGame(Stadium.Width / 2, Stadium.Height);
-        AwayTeam.StartGame(Stadium.Width / 2, Stadium.Height);
-    }
-    private (double, double) GetPositionForAwayTeam(double x, double y)
-    {
-        return (Stadium.Width - x, Stadium.Height - y);
-    }
-
-    public (double, double) GetPositionForTeam(Team team, double x, double y)
-    {
-        return team == HomeTeam ? (x, y) : GetPositionForAwayTeam(x, y);
-    }
-
-    public (double, double) GetBallPositionForTeam(Team team)
-    {
-        return GetPositionForTeam(team, Ball.X, Ball.Y);
-    }
-
-    public void SetBallSpeedForTeam(Team team, double vx, double vy)
-    {
-        if (team == HomeTeam)
+        // Конструктор класса Game, который принимает домашнюю и гостевую команды и стадион.
+        public Game(Team homeTeam, Team awayTeam, Stadium stadium)
         {
-            Ball.SetSpeed(vx, vy);
+            HomeTeam = homeTeam;
+            homeTeam.Game = this;
+            AwayTeam = awayTeam;
+            awayTeam.Game = this;
+            Stadium = stadium;
         }
-        else
-        {
-            Ball.SetSpeed(-vx, -vy);
-        }
-    }
 
-    public void Move()
-    {
-        HomeTeam.Move();
-        AwayTeam.Move();
-        Ball.Move();
+        // Метод для начала игры.
+        public void Start()
+        {
+            Ball = new Ball(Stadium.Width / 2, Stadium.Height / 2, this); // Создание мяча в центре стадиона.
+            HomeTeam.StartGame(Stadium.Width / 2, Stadium.Height); // Начало игры для домашней команды.
+            AwayTeam.StartGame(Stadium.Width / 2, Stadium.Height); // Начало игры для гостевой команды.
+        }
+
+        // Приватный метод для получения позиции для гостевой команды относительно стадиона.
+        private (double, double) GetPositionForAwayTeam(double x, double y)
+        {
+            return (Stadium.Width - x, Stadium.Height - y);
+        }
+
+        // Метод для получения позиции для конкретной команды (домашней или гостевой).
+        public (double, double) GetPositionForTeam(Team team, double x, double y)
+        {
+            return team == HomeTeam ? (x, y) : GetPositionForAwayTeam(x, y);
+        }
+
+        // Метод для получения позиции мяча для конкретной команды.
+        public (double, double) GetBallPositionForTeam(Team team)
+        {
+            return GetPositionForTeam(team, Ball.X, Ball.Y);
+        }
+
+        // Метод для установки скорости мяча для конкретной команды.
+        public void SetBallSpeedForTeam(Team team, double vx, double vy)
+        {
+            if (team == HomeTeam)
+            {
+                Ball.SetSpeed(vx, vy);
+            }
+            else
+            {
+                Ball.SetSpeed(-vx, -vy);
+            }
+        }
+
+        // Метод для выполнения движения (хода) игры.
+        public void Move()
+        {
+            HomeTeam.Move(); // Двигаем домашнюю команду.
+            AwayTeam.Move(); // Двигаем гостевую команду.
+            Ball.Move(); // Двигаем мяч.
+        }
     }
 }
