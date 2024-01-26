@@ -1,42 +1,60 @@
 ﻿namespace Football;
 
-public class Ball // система мяча
+// Класс, представляющий мяч в футбольной игре
+public class Ball
 {
-    public double X { get; private set; } // получение позиции глобальной переменной мяча 
-    public double Y { get; private set; } // получение позиции глобальной переменной мяча 
+    // Публичные свойства для доступа к координатам X и Y мяча
+    public double X { get; private set; }
+    public double Y { get; private set; }
 
-    private double _vx, _vy; // положение движения мяча 
+    // Приватные переменные для хранения скорости мяча по осям X и Y
+    private double _vx, _vy;
 
-    private Game _game; // переменная игры
+    // Ссылка на объект игры, в которой находится мяч
+    private Game _game;
 
-    public Ball(double x, double y, Game game) // данные мяча 
+    // Метод вызывается при достижении нулевых координат мяча
+    private void OnZero()
     {
-        _game = game; // получение переменной игры 
-        X = x; // получение положения мяча 
-        Y = y; // получение положения мяча 
+        // Устанавливаем координаты мяча в центр поля игры и обнуляем скорость
+        X = _game.Stadium.Width / 2;
+        Y = _game.Stadium.Height / 2;
+        _vx = _vy = 0;
     }
 
-    public void SetSpeed(double vx, double vy) // установка скорости мяча 
+    // Конструктор класса, принимающий начальные координаты мяча и объект игры
+    public Ball(double x, double y, Game game)
     {
-        _vx = vx; // получение направления мяча 
-        _vy = vy; // получение направления мяча 
+        _game = game;
+        X = x;
+        Y = y;
     }
 
-    public void Move() // движение 
+    // Метод для установки скорости мяча по осям X и Y
+    public void SetSpeed(double vx, double vy)
     {
-        double newX = X + _vx; // новая переменная положения мяча после удара 
-        double newY = Y + _vy; // новая переменная положения мяча после удара 
-        if (_game.Stadium.IsIn(newX, newY)) // если скорость мяча равна 0, мяч остановиться
-        // положение мяча обновляется иначе останавливается 
+        _vx = vx;
+        _vy = vy;
+    }
+
+    // Метод для перемещения мяча на основе его текущей скорости
+    public void Move()
+    {
+        // Вычисляем новые координаты мяча на основе его текущей скорости
+        double newX = X + _vx;
+        double newY = Y + _vy;
+
+        // Проверяем, остается ли мяч в пределах игрового поля
+        if (_game.Stadium.IsIn(newX, newY))
         {
+            // Если мяч остается в пределах поля, обновляем его координаты
             X = newX;
             Y = newY;
         }
         else
         {
-            _vx = 0;
-            _vy = 0;
+            // Если мяч выходит за пределы поля, вызываем метод OnZero для его возвращения в центр поля
+            OnZero();
         }
     }
-
 }

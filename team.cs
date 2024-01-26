@@ -5,21 +5,25 @@ namespace Football
 {
     public class Team
     {
-        public List<Player> Players { get; } = new List<Player>(); // Список игроков в команде
-        public string Name { get; private set; } // Название команды
-        public Game Game { get; set; } // Ссылка на игру, в которой участвует команда
+        // Список игроков в команде
+        public List<Player> Players { get; } = new List<Player>();
 
-        // Конструктор класса Team
+        // Название команды
+        public string Name { get; private set; }
+
+        // Ссылка на игровое поле, на котором происходит игра
+        public Game Game { get; set; }
+
+        // Конструктор класса Team, принимающий название команды
         public Team(string name)
         {
             Name = name;
         }
 
-        // Метод для начала игры, устанавливает начальные позиции игроков на поле
+        // Метод для начала игры, устанавливает начальные позиции игроков случайным образом
         public void StartGame(int width, int height)
         {
             Random rnd = new Random();
-            // Устанавливаем начальные позиции игроков в случайных координатах на поле
             foreach (var player in Players)
             {
                 player.SetPosition(
@@ -32,21 +36,23 @@ namespace Football
         // Метод для добавления игрока в команду
         public void AddPlayer(Player player)
         {
-            if (player.Team != null) return; // Если игрок уже в другой команде, не добавляем его
-            Players.Add(player); // Добавляем игрока в список игроков команды
-            player.Team = this; // Устанавливаем ссылку на текущую команду у игрока
+            // Проверяем, что игрок не находится уже в другой команде
+            if (player.Team != null) return;
+            Players.Add(player);
+            // Устанавливаем ссылку на текущую команду у игрока
+            player.Team = this;
         }
 
-        // Метод для получения позиции мяча для текущей команды
+        // Метод для получения позиции мяча относительно команды
         public (double, double) GetBallPosition()
         {
-            return Game.GetBallPositionForTeam(this); // Получаем позицию мяча для текущей команды из игры
+            return Game.GetBallPositionForTeam(this);
         }
 
-        // Метод для установки скорости мяча для текущей команды в игре
+        // Метод для установки скорости мяча для команды
         public void SetBallSpeed(double vx, double vy)
         {
-            Game.SetBallSpeedForTeam(this, vx, vy); // Устанавливаем скорость мяча для текущей команды в игре
+            Game.SetBallSpeedForTeam(this, vx, vy);
         }
 
         // Метод для получения ближайшего игрока к мячу
@@ -54,10 +60,11 @@ namespace Football
         {
             Player closestPlayer = Players[0];
             double bestDistance = Double.MaxValue;
-            // Находим игрока из команды, находящегося ближе всего к мячу
             foreach (var player in Players)
             {
+                // Рассчитываем расстояние от текущего игрока до мяча
                 var distance = player.GetDistanceToBall();
+                // Если расстояние меньше лучшего расстояния, обновляем данные ближайшего игрока
                 if (distance < bestDistance)
                 {
                     closestPlayer = player;
@@ -67,12 +74,12 @@ namespace Football
             return closestPlayer;
         }
 
-        // Метод для движения игроков команды
+        // Метод для передвижения игроков
         public void Move()
         {
-            // Двигаем игрока, находящегося ближе всего к мячу, в направлении мяча
+            // Перемещаем ближайшего игрока к мячу
             GetClosestPlayerToBall().MoveTowardsBall();
-            // Затем двигаем всех игроков команды
+            // Перемещаем остальных игроков
             Players.ForEach(player => player.Move());
         }
     }

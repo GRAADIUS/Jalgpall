@@ -2,14 +2,24 @@
 {
     public class Game
     {
-        public Team HomeTeam { get; } // Свойство для доступа к домашней команде.
-        public Team AwayTeam { get; } // Свойство для доступа к гостевой команде.
-        public Stadium Stadium { get; } // Свойство для доступа к стадиону.
-        public Ball Ball { get; private set; } // Свойство для доступа к мячу с приватным сеттером.
+        // Класс, представляющий футбольный матч
 
-        // Конструктор класса Game, который принимает домашнюю и гостевую команды и стадион.
+        // Домашняя команда
+        public Team HomeTeam { get; }
+
+        // Гостевая команда
+        public Team AwayTeam { get; }
+
+        // Стадион
+        public Stadium Stadium { get; }
+
+        // Мяч
+        public Ball Ball { get; private set; }
+
+        // Конструктор класса Game
         public Game(Team homeTeam, Team awayTeam, Stadium stadium)
         {
+            // Инициализация полей класса
             HomeTeam = homeTeam;
             homeTeam.Game = this;
             AwayTeam = awayTeam;
@@ -17,33 +27,36 @@
             Stadium = stadium;
         }
 
-        // Метод для начала игры.
+        // Метод запуска матча
         public void Start()
         {
-            Ball = new Ball(Stadium.Width / 2, Stadium.Height / 2, this); // Создание мяча в центре стадиона.
-            HomeTeam.StartGame(Stadium.Width / 2, Stadium.Height); // Начало игры для домашней команды.
-            AwayTeam.StartGame(Stadium.Width / 2, Stadium.Height); // Начало игры для гостевой команды.
+            // Создание мяча в центре поля
+            Ball = new Ball(Stadium.Width / 2, Stadium.Height / 2, this);
+
+            // Установка начальных позиций игроков команд
+            HomeTeam.StartGame(Stadium.Width / 2, Stadium.Height);
+            AwayTeam.StartGame(Stadium.Width / 2, Stadium.Height);
         }
 
-        // Приватный метод для получения позиции для гостевой команды относительно стадиона.
+        // Получение позиции для гостевой команды (отраженной относительно ширины и высоты стадиона)
         private (double, double) GetPositionForAwayTeam(double x, double y)
         {
             return (Stadium.Width - x, Stadium.Height - y);
         }
 
-        // Метод для получения позиции для конкретной команды (домашней или гостевой).
+        // Получение позиции для определенной команды (домашней или гостевой)
         public (double, double) GetPositionForTeam(Team team, double x, double y)
         {
             return team == HomeTeam ? (x, y) : GetPositionForAwayTeam(x, y);
         }
 
-        // Метод для получения позиции мяча для конкретной команды.
+        // Получение позиции мяча для определенной команды
         public (double, double) GetBallPositionForTeam(Team team)
         {
             return GetPositionForTeam(team, Ball.X, Ball.Y);
         }
 
-        // Метод для установки скорости мяча для конкретной команды.
+        // Установка скорости мяча для определенной команды
         public void SetBallSpeedForTeam(Team team, double vx, double vy)
         {
             if (team == HomeTeam)
@@ -56,12 +69,12 @@
             }
         }
 
-        // Метод для выполнения движения (хода) игры.
+        // Метод, отвечающий за ход матча (движение игроков и мяча)
         public void Move()
         {
-            HomeTeam.Move(); // Двигаем домашнюю команду.
-            AwayTeam.Move(); // Двигаем гостевую команду.
-            Ball.Move(); // Двигаем мяч.
+            HomeTeam.Move();
+            AwayTeam.Move();
+            Ball.Move();
         }
     }
 }
